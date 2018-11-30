@@ -5,18 +5,20 @@ import { HttpModule } from '@angular/http';
 import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './components/app/app.component';
-import { NavMenuComponent } from './components/navmenu/navmenu.component';
 import { HomeComponent } from './components/home/home.component';
 import { FetchDataComponent } from './components/fetchdata/fetchdata.component';
 import { CounterComponent } from './components/counter/counter.component';
+import { HorizontalNavMenuComponent } from './components/horizontal-nav-menu/horizontal-nav-menu.component';
+import { VerticalNavMenuComponent } from './components/vertical-nav-menu/vertical-nav-menu.component';
 
 @NgModule({
     declarations: [
         AppComponent,
-        NavMenuComponent,
         CounterComponent,
         FetchDataComponent,
-        HomeComponent
+        HomeComponent,
+        HorizontalNavMenuComponent,
+        VerticalNavMenuComponent
     ],
     imports: [
         CommonModule,
@@ -25,8 +27,6 @@ import { CounterComponent } from './components/counter/counter.component';
         RouterModule.forRoot([
             { path: '', redirectTo: 'home', pathMatch: 'full' },
             { path: 'home', component: HomeComponent },
-            { path: 'counter', component: CounterComponent },
-            { path: 'fetch-data', component: FetchDataComponent },
             { path: '**', redirectTo: 'home' }
         ])
     ]
