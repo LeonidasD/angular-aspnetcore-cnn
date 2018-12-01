@@ -6,14 +6,9 @@ namespace QuanLyGhiChu.Models
 {
     public partial class QuanLyGhiChuContext : DbContext
     {
-        public QuanLyGhiChuContext()
+        public QuanLyGhiChuContext(DbContextOptions options) : base(options)
         {
 
-        }
-
-        public QuanLyGhiChuContext(DbContextOptions<QuanLyGhiChuContext> options)
-            : base(options)
-        {
         }
 
         public virtual DbSet<Ghichu> Ghichu { get; set; }
@@ -32,9 +27,7 @@ namespace QuanLyGhiChu.Models
             {
                 entity.ToTable("GHICHU");
 
-                entity.Property(e => e.Id)
-                    .HasColumnName("ID")
-                    .ValueGeneratedNever();
+                entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.Property(e => e.HashCode)
                     .IsRequired()

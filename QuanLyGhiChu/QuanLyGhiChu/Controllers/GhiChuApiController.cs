@@ -17,7 +17,12 @@ namespace QuanLyGhiChu.Controllers
     [Route("api/[controller]")]
     public class GhiChuApiController : Controller
     {
-        private QuanLyGhiChuContext db;
+        private readonly QuanLyGhiChuContext _context;
+
+        public GhiChuApiController(QuanLyGhiChuContext context)
+        {
+            _context = context;
+        }
 
         [HttpPost("[action]")]
         public async Task<IActionResult> Create(string data)
@@ -25,34 +30,32 @@ namespace QuanLyGhiChu.Controllers
             dynamic results = JsonConvert.DeserializeObject<dynamic>(data);
             string title = results.title;
             string context = results.context;
-            string hashString = Guid.NewGuid().ToString().Replace("-", "");
+
+            string token = Guid.NewGuid().ToString().Replace("-", "");
+            string hashCode = token.Substring(0, 10);
             DateTime dt = DateTime.Now;
-            string timeNow = dt.ToString("yyMdhhmm");
 
-            var list = new List<Ghichu>();
-           
+            var item = new Ghichu
+            {
+                HashCode = hashCode,
+                Token = token,
+                Title = title,
+                Context = context,
+                TimeCreated = dt,
+                TimeUpdated = null,
+                HienAn = 1
+            };
 
+            await _context.Ghichu.AddAsync(item);
+            await _context.SaveChangesAsync();
 
-
-            //var item = new Ghichu
-            //{
-            //    HashCode = hashString.Substring(0, 6) + timeNow,
-            //    Token = hashString,
-            //    Title = title,
-            //    Context = context,
-            //    TimeCreated = dt,
-            //    TimeUpdated = dt,
-            //    HienAn = 1
-            //};
-
-            db.Ghichu.Add(item);
-            await db.SaveChangesAsync();
-
-            return Content("OK");
             JObject jsonString = new JObject(
                     new JProperty("status", "200"),
-                    new JProperty("message", "Tạo ghi chú thành công")
+                    new JProperty("message", "Tạo ghi chú thành công"),
+                    new JProperty("code", hashCode),
+                    new JProperty("token", token)
                 );
+
             return Content(jsonString.ToString());
         }
     }
