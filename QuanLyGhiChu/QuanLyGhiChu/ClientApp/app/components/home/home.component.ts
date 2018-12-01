@@ -14,10 +14,10 @@ export class HomeComponent {
         this.http = http;
     }
     public postCreateNote(f: NgForm) {
-        this.http.post('api/GhiChu/Create', f.value).subscribe(
+        this.http.post('api/GhiChuApi/Create', f.value).subscribe(
             data => {
                 if (data.status === 200) {
-                    
+                    console.log(data.text);
                 }
             },
             error => console.log("Error")
