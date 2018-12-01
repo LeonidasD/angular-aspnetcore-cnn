@@ -27,16 +27,8 @@ namespace QuanLyGhiChu.Controllers
 
         [Route("view")]
         [HttpPost]
-        public async Task<IActionResult> View(string data)
+        public async Task<IActionResult> View(string code)
         {
-            string code = null;
-
-            dynamic results = JsonConvert.DeserializeObject<dynamic>(data);
-            if (results.code != null)
-            {
-                code = results.code;
-            }
-
             JObject jsonString = new JObject(
                 new JProperty("status", "404"),
                 new JProperty("message", "Không tìm thấy ghi chú")
@@ -76,12 +68,8 @@ namespace QuanLyGhiChu.Controllers
 
         [Route("create")]
         [HttpPost]
-        public async Task<IActionResult> Create(string data)
+        public async Task<IActionResult> Create(string title, string context)
         {
-            dynamic results = JsonConvert.DeserializeObject<dynamic>(data);
-            string title = results.title;
-            string context = results.context;
-
             string token = Guid.NewGuid().ToString().Replace("-", "");
             string hashCode = token.Substring(0, 10);
             DateTime dt = DateTime.Now;
@@ -112,31 +100,8 @@ namespace QuanLyGhiChu.Controllers
 
         [Route("edit")]
         [HttpPost]
-        public async Task<IActionResult> Edit(string data)
+        public async Task<IActionResult> Edit(string token, byte hienan = 1, string title = null, string context = null)
         {
-            string title = null;
-            string context = null;
-            string token = null;
-            byte hienan = 1;
-
-            dynamic results = JsonConvert.DeserializeObject<dynamic>(data);
-            if (results.title != null)
-            {
-                title = results.title;
-            }
-            if (results.context != null)
-            {
-                context = results.context;
-            }
-            if (results.token != null)
-            {
-                token = results.token;
-            }
-            if (results.hienan != null)
-            {
-                hienan = results.hienan;
-            }
-
             JObject jsonString = new JObject(
                 new JProperty("status", "404"),
                 new JProperty("message", "Không tìm thấy ghi chú")
@@ -184,16 +149,8 @@ namespace QuanLyGhiChu.Controllers
 
         [Route("delete")]
         [HttpDelete]
-        public async Task<IActionResult> Delete(string data)
+        public async Task<IActionResult> Delete(string token)
         {
-            string token = null;
-
-            dynamic results = JsonConvert.DeserializeObject<dynamic>(data);
-            if (results.token != null)
-            {
-                token = results.token;
-            }
-
             JObject jsonString = new JObject(
                 new JProperty("status", "404"),
                 new JProperty("message", "Không tìm thấy ghi chú")
