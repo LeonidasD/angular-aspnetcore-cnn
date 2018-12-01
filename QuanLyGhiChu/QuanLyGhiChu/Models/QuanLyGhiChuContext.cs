@@ -6,6 +6,16 @@ namespace QuanLyGhiChu.Models
 {
     public partial class QuanLyGhiChuContext : DbContext
     {
+        public QuanLyGhiChuContext()
+        {
+
+        }
+
+        public QuanLyGhiChuContext(DbContextOptions<QuanLyGhiChuContext> options)
+            : base(options)
+        {
+        }
+
         public virtual DbSet<Ghichu> Ghichu { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

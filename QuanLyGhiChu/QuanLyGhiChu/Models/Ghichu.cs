@@ -28,6 +28,7 @@ namespace QuanLyGhiChu.Models
         public DateTime TimeCreated { get; set; }
 
         [Display(Name = "Ngày chỉnh sửa")]
+        [DataType(DataType.DateTime)]
         public DateTime? TimeUpdated { get; set; }
 
         [Range(0, 1)]
