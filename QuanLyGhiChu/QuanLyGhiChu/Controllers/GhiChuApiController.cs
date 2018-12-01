@@ -34,20 +34,32 @@ namespace QuanLyGhiChu.Controllers
                 new JProperty("message", "Không tìm thấy ghi chú")
             );
 
+            // only accept number and letter, no special characters and spaces
             Regex myRegex = new Regex("^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]{1,50}$");
             if (myRegex.IsMatch(code))
             {
                 Ghichu gc = _context.Ghichu.SingleOrDefault(p => p.HashCode == code);
                 if (gc != null)
                 {
-                    jsonString = new JObject(
-                        new JProperty("status", "200"),
-                        new JProperty("code", gc.HashCode),
-                        new JProperty("title", gc.Title),
-                        new JProperty("context", gc.Context),
-                        new JProperty("timecreated", gc.TimeCreated.ToString("dd/MM/yyyy hh:mm:ss tt")),
-                        new JProperty("timeupdated", gc.TimeUpdated.HasValue ? gc.TimeUpdated.Value.ToString("dd/MM/yyyy hh:mm:ss tt") : "N/A")
-                    );
+                    // if note was hidden
+                    if (gc.HienAn == 0)
+                    {
+                        jsonString = new JObject(
+                            new JProperty("status", "403"),
+                            new JProperty("message", "Ghi chú đã bị ẩn")
+                        );
+                    }
+                    else
+                    {
+                        jsonString = new JObject(
+                            new JProperty("status", "200"),
+                            new JProperty("code", gc.HashCode),
+                            new JProperty("title", gc.Title),
+                            new JProperty("context", gc.Context),
+                            new JProperty("timecreated", gc.TimeCreated.ToString("dd/MM/yyyy hh:mm:ss tt")),
+                            new JProperty("timeupdated", gc.TimeUpdated.HasValue ? gc.TimeUpdated.Value.ToString("dd/MM/yyyy hh:mm:ss tt") : "N/A")
+                        );
+                    }
                 }
             }
 
@@ -92,8 +104,14 @@ namespace QuanLyGhiChu.Controllers
 
         [Route("edit")]
         [HttpPost]
-        public async Task<IActionResult> Edit(string token)
+        public async Task<IActionResult> Edit(string data)
         {
+            dynamic results = JsonConvert.DeserializeObject<dynamic>(data);
+            string title = results.title;
+            string context = results.context;
+            string token = results.token;
+            byte hienan = results.hienan;
+
             JObject jsonString = new JObject(
                 new JProperty("status", "404"),
                 new JProperty("message", "Không tìm thấy ghi chú")
@@ -105,15 +123,34 @@ namespace QuanLyGhiChu.Controllers
                 Ghichu gc = _context.Ghichu.SingleOrDefault(p => p.Token == token);
                 if (gc != null)
                 {
-                    jsonString = new JObject(
-                        new JProperty("status", "200"),
-                        new JProperty("code", gc.HashCode),
-                        new JProperty("token", gc.Token),
-                        new JProperty("title", gc.Title),
-                        new JProperty("context", gc.Context),
-                        new JProperty("timecreated", gc.TimeCreated.ToString("dd/MM/yyyy hh:mm:ss tt")),
-                        new JProperty("timeupdated", gc.TimeUpdated.HasValue ? gc.TimeUpdated.Value.ToString("dd/MM/yyyy hh:mm:ss tt") : "N/A")
-                    );
+                    if (title == null && context == null)
+                    {
+                        jsonString = new JObject(
+                            new JProperty("status", "200"),
+                            new JProperty("code", gc.HashCode),
+                            new JProperty("token", gc.Token),
+                            new JProperty("title", gc.Title),
+                            new JProperty("context", gc.Context),
+                            new JProperty("timecreated", gc.TimeCreated.ToString("dd/MM/yyyy hh:mm:ss tt")),
+                            new JProperty("timeupdated", gc.TimeUpdated.HasValue ? gc.TimeUpdated.Value.ToString("dd/MM/yyyy hh:mm:ss tt") : "N/A"),
+                            new JProperty("hienan", gc.HienAn)
+                        );
+                    }
+                    else
+                    {
+                        gc.Title = title;
+                        gc.Context = context;
+                        gc.TimeUpdated = DateTime.Now;
+                        gc.HienAn = hienan;
+
+                        _context.Ghichu.Update(gc);
+                        await _context.SaveChangesAsync();
+
+                        jsonString = new JObject(
+                            new JProperty("status", "200"),
+                            new JProperty("message", "Đã sửa ghi chú")
+                        );
+                    }
                 }
             }
 
